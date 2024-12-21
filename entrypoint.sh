@@ -20,8 +20,7 @@ cat > config.json << EOF
             "settings":{
                 "clients":[
                     {
-                        "id":"${UUID}",
-                        "flow":"xtls-rprx-direct"
+                        "id":"${UUID}"
                     }
                 ],
                 "decryption":"none",
@@ -31,18 +30,22 @@ cat > config.json << EOF
                     },
                     {
                         "path":"/${WSPATH}-vless",
+                        "xver": 1,
                         "dest":3002
                     },
                     {
                         "path":"/${WSPATH}-vmess",
+                        "xver": 1,
                         "dest":3003
                     },
                     {
                         "path":"/${WSPATH}-trojan",
+                        "xver": 1,
                         "dest":3004
                     },
                     {
                         "path":"/${WSPATH}-shadowsocks",
+                        "xver": 1,
                         "dest":3005
                     }
                 ]
@@ -242,14 +245,62 @@ ss://$(echo "chacha20-ietf-poly1305:${UUID}@www.digitalocean.com:443" | base64 -
 *******************************************
 Clash:
 ----------------------------
-- {name: Argo-Vless, type: vless, server: www.digitalocean.com, port: 443, uuid: ${UUID}, tls: true, servername: ${ARGO}, skip-cert-verify: false, network: ws, ws-opts: {path: /${WSPATH}-vless, headers: { Host: ${ARGO}}}, udp: true}
+  - name: Argo-Vless
+    type: vless
+    server: www.digitalocean.com
+    port: 443
+    uuid: ${UUID}
+    tls: true
+    skip-cert-verify: true
+    servername: ${ARGO}
+    network: ws
+    ws-opts:
+      path: /${WSPATH}-vless
+      headers:
+        Host: ${ARGO}
 ----------------------------
-- {name: Argo-Vmess, type: vmess, server: www.digitalocean.com, port: 443, uuid: ${UUID}, alterId: 0, cipher: none, tls: true, skip-cert-verify: true, network: ws, ws-opts: {path: /${WSPATH}-vmess, headers: {Host: ${ARGO}}}, udp: true}
+  - name: Argo-Vmess
+    type: vmess
+    server: www.digitalocean.com
+    port: 443
+    uuid: ${UUID}
+    alterId: 0
+    cipher: none
+    tls: true
+    skip-cert-verify: true
+    network: ws
+    ws-opts:
+      path: /${WSPATH}-vmess
+      headers:
+        Host: ${ARGO}
 ----------------------------
-- {name: Argo-Trojan, type: trojan, server: www.digitalocean.com, port: 443, password: ${UUID}, udp: true, tls: true, sni: ${ARGO}, skip-cert-verify: false, network: ws, ws-opts: { path: /${WSPATH}-trojan, headers: { Host: ${ARGO} } } }
+  - name: Argo-Trojan
+    type: trojan
+    server: www.digitalocean.com
+    port: 443
+    password: ${UUID}
+    tls: true
+    skip-cert-verify: true
+    sni: ${ARGO}
+    network: ws
+    ws-opts:
+      path: /${WSPATH}-trojan
+      headers:
+        Host: ${ARGO}
 ----------------------------
-- {name: Argo-Shadowsocks, type: ss, server: www.digitalocean.com, port: 443, cipher: chacha20-ietf-poly1305, password: ${UUID}, plugin: v2ray-plugin, plugin-opts: { mode: websocket, host: ${ARGO}, path: /${WSPATH}-shadowsocks, tls: true, skip-cert-verify: false, mux: false } }
-*******************************************
+  - name: Argo-Shadowsocks
+    type: ss
+    server: www.digitalocean.com
+    port: 443
+    cipher: chacha20-ietf-poly1305
+    password: ${UUID}
+    plugin: v2ray-plugin
+    plugin-opts:
+      mode: websocket
+      host: ${ARGO}
+      path: /${WSPATH}-shadowsocks
+      tls: true
+      skip-cert-verify: true
 EOF
 
 echo -e "\n↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓\n"
